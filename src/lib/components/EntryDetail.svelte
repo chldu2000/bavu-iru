@@ -39,7 +39,7 @@
 	<div class="flex flex-col gap-4">
 		{#if entry.username}
 			<div>
-				<label class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">用户名</label>
+				<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">用户名</span>
 				<div class="flex items-center justify-between rounded-md border border-dark-border bg-dark-card px-3 py-2 text-sm text-dark-text">
 					<span>{entry.username}</span>
 					<button
@@ -54,14 +54,14 @@
 
 		{#if entry.password !== null}
 			<div>
-				<label class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">密码</label>
+				<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">密码</span>
 				<PasswordField value={entry.password ?? ''} />
 			</div>
 		{/if}
 
 		{#if entry.url}
 			<div>
-				<label class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">网址</label>
+				<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">网址</span>
 				<div class="rounded-md border border-dark-border bg-dark-card px-3 py-2 text-sm text-accent">
 					{entry.url}
 				</div>
@@ -70,7 +70,7 @@
 
 		{#if entry.notes}
 			<div>
-				<label class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">备注</label>
+				<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">备注</span>
 				<div class="whitespace-pre-wrap rounded-md border border-dark-border bg-dark-card px-3 py-2 text-sm text-dark-secondary">
 					{entry.notes}
 				</div>

@@ -58,7 +58,7 @@
 		<h1 class="mb-1 text-3xl font-bold text-dark-text">Bavu-Iru</h1>
 		<p class="mb-8 text-sm text-dark-muted">密码管理器</p>
 
-		<form onsubmit|preventDefault={handleSubmit} class="flex flex-col gap-3">
+		<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="flex flex-col gap-3">
 			{#if error}
 				<div class="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{error}</div>
 			{/if}
