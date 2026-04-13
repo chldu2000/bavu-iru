@@ -6,9 +6,10 @@
 		selectedId: string | null;
 		onselect: (id: string) => void;
 		oncreate: () => void;
+		onlock: () => void;
 	}
 
-	let { entries, selectedId, onselect, oncreate }: Props = $props();
+	let { entries, selectedId, onselect, oncreate, onlock }: Props = $props();
 	let query = $state('');
 
 	let filtered = $derived(
@@ -61,8 +62,15 @@
 		{/if}
 	</div>
 
-	<!-- 新建按钮 -->
-	<div class="border-t border-dark-border p-2 text-center">
+	<!-- 底部操作 -->
+	<div class="flex items-center justify-between border-t border-dark-border p-2">
+		<button
+			class="cursor-pointer rounded-md px-2 py-1.5 text-xs text-dark-muted hover:text-accent"
+			onclick={onlock}
+			title="锁定保险库"
+		>
+			🔒 锁定
+		</button>
 		<button
 			class="cursor-pointer rounded-md bg-accent px-4 py-1.5 text-xs font-medium text-white hover:bg-accent-hover"
 			onclick={oncreate}

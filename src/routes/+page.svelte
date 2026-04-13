@@ -99,6 +99,7 @@
 				{selectedId}
 				onselect={selectEntry}
 				oncreate={startCreate}
+				onlock={handleLock}
 			/>
 		</div>
 
@@ -132,13 +133,4 @@
 			{/if}
 		</div>
 	</div>
-
-	<!-- 锁定按钮 -->
-	<button
-		class="fixed right-3 top-3 cursor-pointer rounded-md px-2 py-1 text-xs text-dark-muted hover:text-accent"
-		onclick={handleLock}
-		title="锁定保险库"
-	>
-		🔒 锁定
-	</button>
 {/if}
