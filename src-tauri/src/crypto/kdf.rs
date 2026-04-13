@@ -1,5 +1,4 @@
 use argon2::{Argon2, Algorithm, Version, Params};
-use rand::RngCore;
 use zeroize::Zeroize;
 
 const SALT_LEN: usize = 32;
@@ -18,7 +17,7 @@ pub struct KdfParams {
 impl Default for KdfParams {
 	fn default() -> Self {
 		let mut salt = [0u8; SALT_LEN];
-		rand::thread_rng().fill_bytes(&mut salt);
+		rand::fill(&mut salt);
 		Self {
 			salt,
 			time_cost: TIME_COST,
