@@ -11,20 +11,11 @@
 
 	type ViewMode = 'empty' | 'detail' | 'edit' | 'create';
 
-	let vaultState = $state({ isUnlocked: false, isInitialized: false });
-	let entryList = $state<Entry[]>([]);
 	let selectedId: string | null = $state(null);
 	let viewMode: ViewMode = $state('empty');
 
-	$effect(() => {
-		vault.subscribe((v) => (vaultState = v))();
-	});
-	$effect(() => {
-		entries.subscribe((e) => (entryList = e))();
-	});
-
 	let selectedEntry = $derived(
-		selectedId ? entryList.find((e) => e.id === selectedId) ?? null : null
+		selectedId ? $entries.find((e) => e.id === selectedId) ?? null : null
 	);
 
 	onMount(async () => {
@@ -35,17 +26,9 @@
 		}
 	});
 
-	async function handleUnlock() {
-		try {
-			await entries.load();
-		} catch {
-			// silent
-		}
-	}
-
 	$effect(() => {
-		if (vaultState.isUnlocked) {
-			handleUnlock();
+		if ($vault.isUnlocked) {
+			entries.load();
 		}
 	});
 
@@ -105,14 +88,14 @@
 	}
 </script>
 
-{#if !vaultState.isUnlocked}
+{#if !$vault.isUnlocked}
 	<LockScreen />
 {:else}
 	<div class="flex h-screen">
 		<!-- 左侧列表 -->
 		<div class="w-[35%] min-w-0">
 			<EntryList
-				entries={entryList}
+				entries={$entries}
 				{selectedId}
 				onselect={selectEntry}
 				oncreate={startCreate}
