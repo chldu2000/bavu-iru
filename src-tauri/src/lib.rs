@@ -6,7 +6,6 @@ mod security;
 
 use crypto::keyring::Keyring;
 use db::repository::Database;
-use std::sync::Mutex;
 use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -24,7 +23,7 @@ pub fn run() {
 			let database = Database::open(&db_path).expect("Failed to open database");
 			let keyring = Keyring::new();
 
-			app.manage(Mutex::new(database));
+			app.manage(database);
 			app.manage(keyring);
 			Ok(())
 		})
