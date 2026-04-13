@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { vaultSetup, vaultUnlock, vaultLock, vaultStatus } from '$lib/utils/tauri';
 
 export interface VaultState {
 	isUnlocked: boolean;
@@ -13,10 +14,25 @@ function createVaultStore() {
 
 	return {
 		subscribe,
-		initialize: () => update((s) => ({ ...s, isInitialized: true })),
-		unlock: () => update((s) => ({ ...s, isUnlocked: true, isInitialized: true })),
-		lock: () => update((s) => ({ ...s, isUnlocked: false })),
-		reset: () => set({ isUnlocked: false, isInitialized: false })
+		async checkStatus() {
+			const status = await vaultStatus();
+			set({ isUnlocked: status, isInitialized: status });
+		},
+		async setup(password: string) {
+			await vaultSetup(password);
+			update(() => ({ isUnlocked: true, isInitialized: true }));
+		},
+		async unlock(password: string) {
+			await vaultUnlock(password);
+			update(() => ({ isUnlocked: true, isInitialized: true }));
+		},
+		async lock() {
+			await vaultLock();
+			update((s) => ({ ...s, isUnlocked: false }));
+		},
+		reset() {
+			set({ isUnlocked: false, isInitialized: false });
+		}
 	};
 }
 
