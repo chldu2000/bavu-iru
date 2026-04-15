@@ -85,6 +85,13 @@ impl Database {
             );
             "
         )?;
+
+		// Migration for existing databases: add is_favorite column if missing
+		let _ = conn.execute_batch(
+		    "ALTER TABLE entries ADD COLUMN is_favorite INTEGER DEFAULT 0;"
+		);
+		// Ignore error — column already exists is fine
+
 		Ok(())
 	}
 
