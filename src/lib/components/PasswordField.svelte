@@ -5,9 +5,10 @@
     value: string;
     editable?: boolean;
     onchange?: (value: string) => void;
+    oncopy?: () => void;
   }
 
-  let { value, editable = false, onchange }: Props = $props();
+  let { value, editable = false, onchange, oncopy }: Props = $props();
   let visible = $state(false);
   let copied = $state(false);
   let showGenerator = $state(false);
@@ -15,6 +16,7 @@
   async function handleCopy() {
     await navigator.clipboard.writeText(value);
     copied = true;
+    oncopy?.();
     setTimeout(() => (copied = false), 2000);
   }
 

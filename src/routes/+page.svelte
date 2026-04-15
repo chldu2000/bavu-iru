@@ -17,8 +17,9 @@
 
 	let selectedId: string | null = $state(null);
 	let viewMode: ViewMode = $state('empty');
+	let searchQuery = $state('');
 	let filterFolderId: string | null = $state(null);
-	let filterTagId: string | null = $state(null);
+	let filterTagIds: string[] = $state([]);
 
 	let selectedEntry = $derived(
 		selectedId ? $entries.find((e) => e.id === selectedId) ?? null : null
@@ -102,32 +103,61 @@
 	<div class="flex h-screen">
 		<!-- Left sidebar -->
 		<div class="flex w-[35%] min-w-0 flex-col bg-dark-sidebar">
+			<!-- Search bar (fixed at top) -->
+			<div class="border-b border-dark-border p-3">
+				<input
+					type="text"
+					bind:value={searchQuery}
+					placeholder="搜索条目..."
+					class="w-full rounded-md border border-dark-border bg-dark-card px-3 py-2 text-sm text-dark-text outline-none placeholder:text-dark-muted focus:border-accent"
+				/>
+			</div>
+
+			<!-- Folder navigation -->
 			<FolderTree
 				selectedFolderId={filterFolderId}
 				onselect={(id) => {
 					filterFolderId = id;
-					filterTagId = null;
+					filterTagIds = [];
 				}}
 			/>
 
+			<!-- Tag cloud (multi-select) -->
 			<TagCloud
-				selectedTagId={filterTagId}
-				onselect={(id) => {
-					filterTagId = id;
+				selectedTagIds={filterTagIds}
+				onselect={(ids) => {
+					filterTagIds = ids;
 					filterFolderId = null;
 				}}
 			/>
 
-			<div class="flex-1 overflow-hidden">
+			<!-- Scrollable entry list -->
+			<div class="min-h-0 flex-1 overflow-y-auto">
 				<EntryList
 					entries={$entries}
 					{selectedId}
+					{searchQuery}
 					{filterFolderId}
-					{filterTagId}
+					{filterTagIds}
 					onselect={selectEntry}
-					oncreate={startCreate}
-					onlock={handleLock}
 				/>
+			</div>
+
+			<!-- Bottom bar (fixed at bottom) -->
+			<div class="flex items-center justify-between border-t border-dark-border p-2">
+				<button
+					class="cursor-pointer rounded-md px-2 py-1.5 text-xs text-dark-muted hover:text-accent"
+					onclick={handleLock}
+					title="锁定保险库"
+				>
+					🔒 锁定
+				</button>
+				<button
+					class="cursor-pointer rounded-md bg-accent px-4 py-1.5 text-xs font-medium text-white hover:bg-accent-hover"
+					onclick={startCreate}
+				>
+					+ 新建条目
+				</button>
 			</div>
 		</div>
 

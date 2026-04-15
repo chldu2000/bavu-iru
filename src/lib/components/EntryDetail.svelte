@@ -129,7 +129,7 @@
 		{#if entry.password !== null}
 			<div>
 				<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">密码</span>
-				<PasswordField value={entry.password ?? ''} />
+				<PasswordField value={entry.password ?? ''} oncopy={() => copyText(entry.password!, 'password')} />
 			</div>
 		{/if}
 
