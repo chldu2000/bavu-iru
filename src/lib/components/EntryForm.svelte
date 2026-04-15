@@ -10,11 +10,11 @@
 
 	let { entry, onsave, oncancel }: Props = $props();
 
-	let title = $state(entry?.title ?? '');
-	let username = $state(entry?.username ?? '');
-	let password = $state(entry?.password ?? '');
-	let url = $state(entry?.url ?? '');
-	let notes = $state(entry?.notes ?? '');
+	let title = $derived(entry?.title ?? '');
+	let username = $derived(entry?.username ?? '');
+	let password = $derived(entry?.password ?? '');
+	let url = $derived(entry?.url ?? '');
+	let notes = $derived(entry?.notes ?? '');
 
 	function generatePassword() {
 		const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
