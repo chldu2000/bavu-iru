@@ -37,3 +37,30 @@ export async function entryUpdate(entry: Entry): Promise<boolean> {
 export async function entryDelete(id: string): Promise<boolean> {
 	return invoke('entry_delete', { id });
 }
+
+export interface GeneratorOptions {
+  length: number;
+  uppercase: boolean;
+  lowercase: boolean;
+  digits: boolean;
+  special: boolean;
+  exclude_chars: string;
+}
+
+export interface GeneratedPassword {
+  password: string;
+}
+
+export interface StrengthResult {
+  score: number;
+  label: string;
+  feedback: string;
+}
+
+export async function generatePassword(options: GeneratorOptions): Promise<GeneratedPassword> {
+  return invoke('generate_password', { options });
+}
+
+export async function evaluatePasswordStrength(password: string): Promise<StrengthResult> {
+  return invoke('evaluate_password_strength', { password });
+}

@@ -16,14 +16,6 @@
 	let url = $derived(entry?.url ?? '');
 	let notes = $derived(entry?.notes ?? '');
 
-	function generatePassword() {
-		const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
-		const bytes = crypto.getRandomValues(new Uint8Array(16));
-		password = Array.from(bytes)
-			.map((b) => chars[b % chars.length])
-			.join('');
-	}
-
 	function handleSubmit() {
 		if (!title.trim()) return;
 		const now = new Date().toISOString();
@@ -77,7 +69,6 @@
 				value={password}
 				editable={true}
 				onchange={(v) => (password = v)}
-				ongenerate={generatePassword}
 			/>
 		</div>
 
