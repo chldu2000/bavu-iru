@@ -2,10 +2,14 @@
 	import { onMount } from 'svelte';
 	import { vault } from '$lib/stores/vault';
 	import { entries } from '$lib/stores/entries';
+	import { folders } from '$lib/stores/folders';
+	import { tags } from '$lib/stores/tags';
 	import LockScreen from '$lib/components/LockScreen.svelte';
 	import EntryList from '$lib/components/EntryList.svelte';
 	import EntryDetail from '$lib/components/EntryDetail.svelte';
 	import EntryForm from '$lib/components/EntryForm.svelte';
+	import FolderTree from '$lib/components/FolderTree.svelte';
+	import TagCloud from '$lib/components/TagCloud.svelte';
 
 	import type { Entry } from '$lib/stores/entries';
 
@@ -13,6 +17,8 @@
 
 	let selectedId: string | null = $state(null);
 	let viewMode: ViewMode = $state('empty');
+	let filterFolderId: string | null = $state(null);
+	let filterTagId: string | null = $state(null);
 
 	let selectedEntry = $derived(
 		selectedId ? $entries.find((e) => e.id === selectedId) ?? null : null
@@ -29,6 +35,8 @@
 	$effect(() => {
 		if ($vault.isUnlocked) {
 			entries.load();
+			folders.load();
+			tags.load();
 		}
 	});
 
@@ -92,18 +100,38 @@
 	<LockScreen />
 {:else}
 	<div class="flex h-screen">
-		<!-- 左侧列表 -->
-		<div class="w-[35%] min-w-0">
-			<EntryList
-				entries={$entries}
-				{selectedId}
-				onselect={selectEntry}
-				oncreate={startCreate}
-				onlock={handleLock}
+		<!-- Left sidebar -->
+		<div class="flex w-[35%] min-w-0 flex-col bg-dark-sidebar">
+			<FolderTree
+				selectedFolderId={filterFolderId}
+				onselect={(id) => {
+					filterFolderId = id;
+					filterTagId = null;
+				}}
 			/>
+
+			<TagCloud
+				selectedTagId={filterTagId}
+				onselect={(id) => {
+					filterTagId = id;
+					filterFolderId = null;
+				}}
+			/>
+
+			<div class="flex-1 overflow-hidden">
+				<EntryList
+					entries={$entries}
+					{selectedId}
+					{filterFolderId}
+					{filterTagId}
+					onselect={selectEntry}
+					oncreate={startCreate}
+					onlock={handleLock}
+				/>
+			</div>
 		</div>
 
-		<!-- 右侧面板 -->
+		<!-- Right panel -->
 		<div class="flex-1 bg-dark-bg">
 			{#if viewMode === 'detail' && selectedEntry}
 				<EntryDetail
