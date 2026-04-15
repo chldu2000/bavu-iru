@@ -64,3 +64,70 @@ export async function generatePassword(options: GeneratorOptions): Promise<Gener
 export async function evaluatePasswordStrength(password: string): Promise<StrengthResult> {
   return invoke('evaluate_password_strength', { password });
 }
+
+// --- Folder operations ---
+
+export interface Folder {
+  id: string;
+  name: string;
+  parent_id: string | null;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function folderCreate(name: string, parentId: string | null): Promise<Folder> {
+  return invoke('folder_create', { name, parentId });
+}
+
+export async function folderRename(id: string, name: string): Promise<boolean> {
+  return invoke('folder_rename', { id, name });
+}
+
+export async function folderDelete(id: string): Promise<boolean> {
+  return invoke('folder_delete', { id });
+}
+
+export async function folderList(): Promise<Folder[]> {
+  return invoke('folder_list');
+}
+
+// --- Tag operations ---
+
+export interface Tag {
+  id: string;
+  name: string;
+  color: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function tagCreate(name: string, color: string | null): Promise<Tag> {
+  return invoke('tag_create', { name, color });
+}
+
+export async function tagUpdate(id: string, name: string, color: string): Promise<boolean> {
+  return invoke('tag_update', { id, name, color });
+}
+
+export async function tagDelete(id: string): Promise<boolean> {
+  return invoke('tag_delete', { id });
+}
+
+export async function tagList(): Promise<Tag[]> {
+  return invoke('tag_list');
+}
+
+export async function tagAddToEntry(entryId: string, tagId: string): Promise<void> {
+  return invoke('tag_add_to_entry', { entryId, tagId });
+}
+
+export async function tagRemoveFromEntry(entryId: string, tagId: string): Promise<void> {
+  return invoke('tag_remove_from_entry', { entryId, tagId });
+}
+
+// --- Favorite operations ---
+
+export async function toggleFavorite(id: string): Promise<boolean> {
+  return invoke('toggle_favorite', { id });
+}

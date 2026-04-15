@@ -31,6 +31,7 @@
 			tags: entry?.tags ?? null,
 			strength: entry?.strength ?? null,
 			expires_at: entry?.expires_at ?? null,
+			is_favorite: entry?.is_favorite ?? false,
 			created_at: entry?.created_at ?? now,
 			updated_at: now
 		});
