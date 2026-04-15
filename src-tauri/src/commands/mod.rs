@@ -4,3 +4,5 @@ pub mod clipboard;
 pub mod import_export;
 pub mod generator;
 pub mod strength;
+pub mod folders;
+pub mod tags;
