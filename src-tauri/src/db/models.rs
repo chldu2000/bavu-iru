@@ -13,6 +13,16 @@ pub struct Entry {
 	pub tags: Option<String>,
 	pub strength: Option<i32>,
 	pub expires_at: Option<String>,
+	pub is_favorite: bool,
+	pub created_at: String,
+	pub updated_at: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Tag {
+	pub id: String,
+	pub name: String,
+	pub color: String,
 	pub created_at: String,
 	pub updated_at: String,
 }

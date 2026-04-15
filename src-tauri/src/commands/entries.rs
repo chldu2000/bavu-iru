@@ -39,3 +39,11 @@ pub fn entry_delete(id: String, db: State<'_, Database>, keyring: State<'_, Keyr
 	}
 	Ok(db.delete_entry(&id)?)
 }
+
+#[tauri::command]
+pub fn toggle_favorite(id: String, db: State<'_, Database>, keyring: State<'_, Keyring>) -> Result<bool, AppError> {
+	if !keyring.is_unlocked() {
+		return Err(AppError::VaultLocked);
+	}
+	Ok(db.toggle_favorite(&id)?)
+}
