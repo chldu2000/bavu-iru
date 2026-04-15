@@ -38,6 +38,7 @@ pub fn run() {
 			commands::entries::entry_update,
 			commands::entries::entry_delete,
 			commands::generator::generate_password,
+			commands::strength::evaluate_password_strength,
 		])
 		.run(tauri::generate_context!())
 		.expect("error while running tauri application");
