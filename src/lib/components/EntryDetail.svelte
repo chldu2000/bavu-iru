@@ -4,6 +4,7 @@
 	import { folders } from '$lib/stores/folders';
 	import { tags } from '$lib/stores/tags';
 	import PasswordField from './PasswordField.svelte';
+	import Toast from './Toast.svelte';
 
 	interface Props {
 		entry: Entry;
@@ -30,8 +31,17 @@
 		}
 	});
 
-	async function copyText(text: string) {
+	let copiedField = $state('');
+	let showCopiedToast = $state(false);
+
+	async function copyText(text: string, field: string = '') {
 		await navigator.clipboard.writeText(text);
+		copiedField = field;
+		showCopiedToast = true;
+		setTimeout(() => {
+			showCopiedToast = false;
+			copiedField = '';
+		}, 2000);
 	}
 
 	async function handleToggleFavorite() {
@@ -108,9 +118,9 @@
 					<span>{entry.username}</span>
 					<button
 						class="cursor-pointer text-xs text-accent hover:underline"
-						onclick={() => copyText(entry.username!)}
+						onclick={() => copyText(entry.username!, 'username')}
 					>
-						复制
+						{copiedField === 'username' ? '已复制' : '复制'}
 					</button>
 				</div>
 			</div>
@@ -145,4 +155,6 @@
 			</div>
 		{/if}
 	</div>
+
+	<Toast message="已复制到剪贴板" visible={showCopiedToast} />
 </div>
