@@ -131,3 +131,13 @@ export async function tagRemoveFromEntry(entryId: string, tagId: string): Promis
 export async function toggleFavorite(id: string): Promise<boolean> {
   return invoke('toggle_favorite', { id });
 }
+
+// --- Clipboard operations ---
+
+export async function clipboardCopy(text: string, sensitive: boolean, clearSeconds?: number): Promise<void> {
+  return invoke('clipboard_copy', { text, sensitive, clearSeconds });
+}
+
+export async function clipboardClear(): Promise<void> {
+  return invoke('clipboard_clear');
+}

@@ -3,6 +3,8 @@
 	import { entries } from '$lib/stores/entries';
 	import { folders } from '$lib/stores/folders';
 	import { tags } from '$lib/stores/tags';
+	import { clipboardCopy } from '$lib/utils/tauri';
+	import { settings } from '$lib/stores/settings';
 	import PasswordField from './PasswordField.svelte';
 	import Toast from './Toast.svelte';
 
@@ -34,8 +36,8 @@
 	let copiedField = $state('');
 	let showCopiedToast = $state(false);
 
-	async function copyText(text: string, field: string = '') {
-		await navigator.clipboard.writeText(text);
+	async function copyText(text: string, field: string = '', sensitive: boolean = false) {
+		await clipboardCopy(text, sensitive, $settings.clipboardClearSeconds);
 		copiedField = field;
 		showCopiedToast = true;
 		setTimeout(() => {
@@ -118,7 +120,7 @@
 					<span>{entry.username}</span>
 					<button
 						class="cursor-pointer text-xs text-accent hover:underline"
-						onclick={() => copyText(entry.username!, 'username')}
+						onclick={() => copyText(entry.username!, 'username', false)}
 					>
 						{copiedField === 'username' ? '已复制' : '复制'}
 					</button>
@@ -129,7 +131,7 @@
 		{#if entry.password !== null}
 			<div>
 				<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">密码</span>
-				<PasswordField value={entry.password ?? ''} oncopy={() => copyText(entry.password!, 'password')} />
+				<PasswordField value={entry.password ?? ''} oncopy={() => copyText(entry.password!, 'password', true)} />
 			</div>
 		{/if}
 

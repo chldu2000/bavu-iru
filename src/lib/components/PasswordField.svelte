@@ -1,20 +1,23 @@
 <script lang="ts">
   import PasswordGenerator from './PasswordGenerator.svelte';
+  import { clipboardCopy } from '$lib/utils/tauri';
+  import { settings } from '$lib/stores/settings';
 
   interface Props {
     value: string;
     editable?: boolean;
     onchange?: (value: string) => void;
     oncopy?: () => void;
+    sensitive?: boolean;
   }
 
-  let { value, editable = false, onchange, oncopy }: Props = $props();
+  let { value, editable = false, onchange, oncopy, sensitive = false }: Props = $props();
   let visible = $state(false);
   let copied = $state(false);
   let showGenerator = $state(false);
 
   async function handleCopy() {
-    await navigator.clipboard.writeText(value);
+    await clipboardCopy(value, sensitive, $settings.clipboardClearSeconds);
     copied = true;
     oncopy?.();
     setTimeout(() => (copied = false), 2000);

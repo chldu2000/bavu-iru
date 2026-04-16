@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { listen } from '@tauri-apps/api/event';
 	import { vault } from '$lib/stores/vault';
 	import { entries } from '$lib/stores/entries';
 	import { folders } from '$lib/stores/folders';
@@ -10,6 +11,7 @@
 	import EntryForm from '$lib/components/EntryForm.svelte';
 	import FolderTree from '$lib/components/FolderTree.svelte';
 	import TagCloud from '$lib/components/TagCloud.svelte';
+	import Toast from '$lib/components/Toast.svelte';
 
 	import type { Entry } from '$lib/stores/entries';
 
@@ -20,6 +22,7 @@
 	let searchQuery = $state('');
 	let filterFolderId: string | null = $state(null);
 	let filterTagIds: string[] = $state([]);
+	let clipboardClearedToast = $state(false);
 
 	let selectedEntry = $derived(
 		selectedId ? $entries.find((e) => e.id === selectedId) ?? null : null
@@ -28,6 +31,10 @@
 	onMount(async () => {
 		try {
 			await vault.checkStatus();
+			listen('clipboard-cleared', () => {
+				clipboardClearedToast = true;
+				setTimeout(() => (clipboardClearedToast = false), 2000);
+			}).catch(() => {});
 		} catch {
 			// Tauri not available (dev in browser)
 		}
@@ -192,3 +199,5 @@
 		</div>
 	</div>
 {/if}
+
+<Toast message="剪贴板已清除" visible={clipboardClearedToast} />
