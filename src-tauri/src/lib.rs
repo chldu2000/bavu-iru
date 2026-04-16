@@ -4,6 +4,7 @@ mod commands;
 mod error;
 mod security;
 
+use commands::clipboard::ClipboardState;
 use crypto::keyring::Keyring;
 use db::repository::Database;
 use tauri::Manager;
@@ -12,6 +13,7 @@ use tauri::Manager;
 pub fn run() {
 	tauri::Builder::default()
 		.plugin(tauri_plugin_log::Builder::default().build())
+		.plugin(tauri_plugin_clipboard_manager::init())
 		.setup(|app| {
 			// Open database in app data directory
 			let app_dir = app
@@ -25,6 +27,7 @@ pub fn run() {
 
 			app.manage(database);
 			app.manage(keyring);
+			app.manage(ClipboardState::new());
 			Ok(())
 		})
 		.invoke_handler(tauri::generate_handler![
@@ -50,6 +53,8 @@ pub fn run() {
 			commands::tags::tag_remove_from_entry,
 			commands::generator::generate_password,
 			commands::strength::evaluate_password_strength,
+			commands::clipboard::clipboard_copy,
+			commands::clipboard::clipboard_clear,
 		])
 		.run(tauri::generate_context!())
 		.expect("error while running tauri application");

@@ -20,6 +20,8 @@ pub enum AppError {
 	Kdf(String),
 	#[error("Base64 decode error: {0}")]
 	Base64(#[from] base64::DecodeError),
+	#[error("Clipboard error: {0}")]
+	Clipboard(String),
 }
 
 impl From<aes_gcm::Error> for AppError {
