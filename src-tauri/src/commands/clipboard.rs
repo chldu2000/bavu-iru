@@ -1,6 +1,7 @@
 use std::sync::Mutex;
 use tauri::Emitter;
 use tauri::State;
+use tauri_plugin_clipboard_manager::ClipboardExt;
 
 use crate::error::AppError;
 
@@ -31,14 +32,13 @@ pub async fn clipboard_copy(
     }
 
     // Write to clipboard via the plugin
-    use tauri_plugin_clipboard_manager::ClipboardExt;
     app.clipboard()
         .write_text(&text)
         .map_err(|e| AppError::Clipboard(e.to_string()))?;
 
     // If sensitive, start auto-clear timer
     if sensitive {
-        let seconds = clear_seconds.unwrap_or(30);
+        let seconds = clear_seconds.unwrap_or(30).max(5);
         let app_clone = app.clone();
         let token = tokio_util::sync::CancellationToken::new();
         let token_clone = token.clone();
@@ -48,10 +48,12 @@ pub async fn clipboard_copy(
         tauri::async_runtime::spawn(async move {
             tokio::select! {
                 _ = tokio::time::sleep(std::time::Duration::from_secs(seconds)) => {
-                    let _ = app_clone.clipboard()
-                        .write_text("")
-                        .map_err(|e| AppError::Clipboard(e.to_string()));
-                    let _ = app_clone.emit("clipboard-cleared", ());
+                    if let Err(e) = app_clone.clipboard().write_text("") {
+                        log::error!("Failed to auto-clear clipboard: {e}");
+                    }
+                    if let Err(e) = app_clone.emit("clipboard-cleared", ()) {
+                        log::warn!("Failed to emit clipboard-cleared event: {e}");
+                    }
                 }
                 _ = token_clone.cancelled() => {
                     // Timer was cancelled (new copy happened)
@@ -73,11 +75,12 @@ pub async fn clipboard_clear(
         token.cancel();
     }
 
-    use tauri_plugin_clipboard_manager::ClipboardExt;
     app.clipboard()
         .write_text("")
         .map_err(|e| AppError::Clipboard(e.to_string()))?;
 
-    let _ = app.emit("clipboard-cleared", ());
+    if let Err(e) = app.emit("clipboard-cleared", ()) {
+        log::warn!("Failed to emit clipboard-cleared event: {e}");
+    }
     Ok(())
 }
