@@ -12,6 +12,8 @@
 	import FolderTree from '$lib/components/FolderTree.svelte';
 	import TagCloud from '$lib/components/TagCloud.svelte';
 	import Toast from '$lib/components/Toast.svelte';
+	import { startIdleTimer, startFocusLossTimer } from '$lib/lib/idleTimer';
+	import type { TimerHandle } from '$lib/lib/idleTimer';
 
 	import type { Entry } from '$lib/stores/entries';
 
@@ -23,6 +25,8 @@
 	let filterFolderId: string | null = $state(null);
 	let filterTagIds: string[] = $state([]);
 	let clipboardClearedToast = $state(false);
+	let idleTimer: TimerHandle | null = $state(null);
+	let focusTimer: TimerHandle | null = $state(null);
 
 	let selectedEntry = $derived(
 		selectedId ? $entries.find((e) => e.id === selectedId) ?? null : null
@@ -45,6 +49,24 @@
 			entries.load();
 			folders.load();
 			tags.load();
+
+			// Start auto-lock timers
+			if (!idleTimer) {
+				idleTimer = startIdleTimer();
+			}
+			if (!focusTimer) {
+				focusTimer = startFocusLossTimer();
+			}
+		} else {
+			// Stop timers when locked
+			if (idleTimer) {
+				idleTimer.stop();
+				idleTimer = null;
+			}
+			if (focusTimer) {
+				focusTimer.stop();
+				focusTimer = null;
+			}
 		}
 	});
 

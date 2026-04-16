@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { listen } from '@tauri-apps/api/event';
 import { vaultSetup, vaultUnlock, vaultLock, vaultStatus } from '$lib/utils/tauri';
 
 export interface VaultState {
@@ -11,6 +12,13 @@ function createVaultStore() {
 		isUnlocked: false,
 		isInitialized: false
 	});
+
+	// Listen for vault-locked events from backend (e.g. system lock screen)
+	if (typeof window !== 'undefined') {
+		listen('vault-locked', () => {
+			update((s) => ({ ...s, isUnlocked: false }));
+		}).catch(() => {});
+	}
 
 	return {
 		subscribe,
