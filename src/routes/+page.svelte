@@ -31,13 +31,13 @@
 	onMount(async () => {
 		try {
 			await vault.checkStatus();
-			listen('clipboard-cleared', () => {
-				clipboardClearedToast = true;
-				setTimeout(() => (clipboardClearedToast = false), 2000);
-			}).catch(() => {});
 		} catch {
 			// Tauri not available (dev in browser)
 		}
+		listen('clipboard-cleared', () => {
+			clipboardClearedToast = true;
+			setTimeout(() => (clipboardClearedToast = false), 2000);
+		}).catch(() => {});
 	});
 
 	$effect(() => {

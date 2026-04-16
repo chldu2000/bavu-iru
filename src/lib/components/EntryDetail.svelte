@@ -131,7 +131,11 @@
 		{#if entry.password !== null}
 			<div>
 				<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">密码</span>
-				<PasswordField value={entry.password ?? ''} oncopy={() => copyText(entry.password!, 'password', true)} />
+				<PasswordField value={entry.password ?? ''} sensitive={true} oncopy={() => {
+					copiedField = 'password';
+					showCopiedToast = true;
+					setTimeout(() => { showCopiedToast = false; copiedField = ''; }, 2000);
+				}} />
 			</div>
 		{/if}
 
