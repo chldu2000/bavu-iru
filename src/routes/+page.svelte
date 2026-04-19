@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { listen } from '@tauri-apps/api/event';
 	import { vault } from '$lib/stores/vault';
 	import { entries } from '$lib/stores/entries';
 	import { folders } from '$lib/stores/folders';
@@ -10,16 +11,23 @@
 	import EntryForm from '$lib/components/EntryForm.svelte';
 	import FolderTree from '$lib/components/FolderTree.svelte';
 	import TagCloud from '$lib/components/TagCloud.svelte';
+	import Toast from '$lib/components/Toast.svelte';
+	import Settings from '$lib/components/Settings.svelte';
+	import { startIdleTimer, startFocusLossTimer } from '$lib/lib/idleTimer';
+	import type { TimerHandle } from '$lib/lib/idleTimer';
 
 	import type { Entry } from '$lib/stores/entries';
 
-	type ViewMode = 'empty' | 'detail' | 'edit' | 'create';
+	type ViewMode = 'empty' | 'detail' | 'edit' | 'create' | 'settings';
 
 	let selectedId: string | null = $state(null);
 	let viewMode: ViewMode = $state('empty');
 	let searchQuery = $state('');
 	let filterFolderId: string | null = $state(null);
 	let filterTagIds: string[] = $state([]);
+	let clipboardClearedToast = $state(false);
+	let idleTimer: TimerHandle | null = $state(null);
+	let focusTimer: TimerHandle | null = $state(null);
 
 	let selectedEntry = $derived(
 		selectedId ? $entries.find((e) => e.id === selectedId) ?? null : null
@@ -31,6 +39,10 @@
 		} catch {
 			// Tauri not available (dev in browser)
 		}
+		listen('clipboard-cleared', () => {
+			clipboardClearedToast = true;
+			setTimeout(() => (clipboardClearedToast = false), 2000);
+		}).catch(() => {});
 	});
 
 	$effect(() => {
@@ -38,6 +50,24 @@
 			entries.load();
 			folders.load();
 			tags.load();
+
+			// Start auto-lock timers
+			if (!idleTimer) {
+				idleTimer = startIdleTimer();
+			}
+			if (!focusTimer) {
+				focusTimer = startFocusLossTimer();
+			}
+		} else {
+			// Stop timers when locked
+			if (idleTimer) {
+				idleTimer.stop();
+				idleTimer = null;
+			}
+			if (focusTimer) {
+				focusTimer.stop();
+				focusTimer = null;
+			}
 		}
 	});
 
@@ -145,13 +175,22 @@
 
 			<!-- Bottom bar (fixed at bottom) -->
 			<div class="flex items-center justify-between border-t border-dark-border p-2">
-				<button
-					class="cursor-pointer rounded-md px-2 py-1.5 text-xs text-dark-muted hover:text-accent"
-					onclick={handleLock}
-					title="锁定保险库"
-				>
-					🔒 锁定
-				</button>
+				<div class="flex items-center gap-1">
+					<button
+						class="cursor-pointer rounded-md px-2 py-1.5 text-xs text-dark-muted hover:text-accent"
+						onclick={handleLock}
+						title="锁定保险库"
+					>
+						🔒 锁定
+					</button>
+					<button
+						class="cursor-pointer rounded-md px-2 py-1.5 text-xs text-dark-muted hover:text-accent"
+						onclick={() => (viewMode = 'settings')}
+						title="设置"
+					>
+						⚙ 设置
+					</button>
+				</div>
 				<button
 					class="cursor-pointer rounded-md bg-accent px-4 py-1.5 text-xs font-medium text-white hover:bg-accent-hover"
 					onclick={startCreate}
@@ -163,7 +202,9 @@
 
 		<!-- Right panel -->
 		<div class="flex-1 bg-dark-bg">
-			{#if viewMode === 'detail' && selectedEntry}
+			{#if viewMode === 'settings'}
+				<Settings onclose={() => (viewMode = 'empty')} />
+			{:else if viewMode === 'detail' && selectedEntry}
 				<EntryDetail
 					entry={selectedEntry}
 					onedit={startEdit}
@@ -192,3 +233,5 @@
 		</div>
 	</div>
 {/if}
+
+<Toast message="剪贴板已清除" visible={clipboardClearedToast} />
