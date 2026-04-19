@@ -15,7 +15,7 @@ pub fn create_tray<R: Runtime>(app: &App<R>) -> Result<(), Box<dyn std::error::E
     let menu = Menu::with_items(app, &[&status, &show, &lock, &sep, &quit])?;
 
     let icon_bytes = include_bytes!("../icons/32x32.png");
-    let icon = tauri::image::Image::new_owned(icon_bytes.to_vec(), 32, 32);
+    let icon = tauri::image::Image::from_bytes(icon_bytes)?;
 
     // Store a cloned menu reference for dynamic updates
     // Menu is Arc-based internally so clone is cheap
