@@ -3,12 +3,13 @@ mod db;
 mod commands;
 mod error;
 mod security;
+mod tray;
 
 use commands::clipboard::ClipboardState;
 use crypto::keyring::Keyring;
 use db::repository::Database;
 use security::autolock::create_lock_screen_listener;
-use tauri::{Emitter, Manager};
+use tauri::{Emitter, Listener, Manager};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -41,6 +42,15 @@ pub fn run() {
 				}
 			}));
 
+			// Create system tray
+			tray::create_tray(app)?;
+
+			// Update tray state when vault unlocks
+			let tray_handle = app.handle().clone();
+			app.listen("vault-unlocked", move |_| {
+				tray::update_tray_state(&tray_handle, true);
+			});
+
 			Ok(())
 		})
 		.invoke_handler(tauri::generate_handler![
@@ -69,6 +79,13 @@ pub fn run() {
 			commands::clipboard::clipboard_copy,
 			commands::clipboard::clipboard_clear,
 		])
+		.on_window_event(|window, event| {
+			if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+				// Hide window instead of closing — keep app in system tray
+				let _ = window.hide();
+				api.prevent_close();
+			}
+		})
 		.run(tauri::generate_context!())
 		.expect("error while running tauri application");
 }

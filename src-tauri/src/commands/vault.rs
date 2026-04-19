@@ -1,5 +1,5 @@
 use base64::{Engine, engine::general_purpose::STANDARD as BASE64};
-use tauri::State;
+use tauri::{Emitter, State};
 
 use crate::crypto::keyring::Keyring;
 use crate::crypto::kdf::{self, KdfParams};
@@ -7,7 +7,7 @@ use crate::db::repository::Database;
 use crate::error::AppError;
 
 #[tauri::command]
-pub fn vault_setup(password: String, db: State<'_, Database>, keyring: State<'_, Keyring>) -> Result<(), AppError> {
+pub fn vault_setup(app: tauri::AppHandle, password: String, db: State<'_, Database>, keyring: State<'_, Keyring>) -> Result<(), AppError> {
 	if keyring.is_unlocked() {
 		return Err(AppError::VaultAlreadyUnlocked);
 	}
@@ -33,11 +33,12 @@ pub fn vault_setup(password: String, db: State<'_, Database>, keyring: State<'_,
 	db.set_meta("vault_verify", &BASE64.encode(&encrypted))?;
 
 	keyring.set(key);
+	let _ = app.emit("vault-unlocked", ());
 	Ok(())
 }
 
 #[tauri::command]
-pub fn vault_unlock(password: String, db: State<'_, Database>, keyring: State<'_, Keyring>) -> Result<(), AppError> {
+pub fn vault_unlock(app: tauri::AppHandle, password: String, db: State<'_, Database>, keyring: State<'_, Keyring>) -> Result<(), AppError> {
 	if keyring.is_unlocked() {
 		return Err(AppError::VaultAlreadyUnlocked);
 	}
@@ -69,12 +70,14 @@ pub fn vault_unlock(password: String, db: State<'_, Database>, keyring: State<'_
 	}
 
 	keyring.set(key);
+	let _ = app.emit("vault-unlocked", ());
 	Ok(())
 }
 
 #[tauri::command]
-pub fn vault_lock(keyring: State<'_, Keyring>) -> Result<(), AppError> {
+pub fn vault_lock(app: tauri::AppHandle, keyring: State<'_, Keyring>) -> Result<(), AppError> {
 	keyring.lock();
+	let _ = app.emit("vault-locked", ());
 	Ok(())
 }
 
