@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { settings } from '$lib/stores/settings';
+	import { settings, saveSettings } from '$lib/stores/settings';
 
 	interface Props {
 		onclose: () => void;
@@ -10,8 +10,8 @@
 	let localSettings = $state({ ...$settings });
 	let saved = $state(false);
 
-	function save() {
-		$settings = { ...localSettings };
+	async function save() {
+		await saveSettings({ ...localSettings });
 		saved = true;
 		setTimeout(() => (saved = false), 2000);
 	}

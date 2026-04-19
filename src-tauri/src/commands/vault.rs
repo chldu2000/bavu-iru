@@ -85,3 +85,14 @@ pub fn vault_lock(app: tauri::AppHandle, keyring: State<'_, Keyring>) -> Result<
 pub fn vault_status(keyring: State<'_, Keyring>) -> bool {
 	keyring.is_unlocked()
 }
+
+#[tauri::command]
+pub fn settings_get(db: State<'_, Database>) -> Result<String, AppError> {
+    Ok(db.get_meta("app_settings")?.unwrap_or_else(|| "{}".to_string()))
+}
+
+#[tauri::command]
+pub fn settings_set(db: State<'_, Database>, settings: String) -> Result<(), AppError> {
+    db.set_meta("app_settings", &settings)?;
+    Ok(())
+}

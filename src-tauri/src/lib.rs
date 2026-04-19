@@ -58,6 +58,8 @@ pub fn run() {
 			commands::vault::vault_unlock,
 			commands::vault::vault_lock,
 			commands::vault::vault_status,
+			commands::vault::settings_get,
+			commands::vault::settings_set,
 			commands::entries::entry_list,
 			commands::entries::entry_get,
 			commands::entries::entry_create,

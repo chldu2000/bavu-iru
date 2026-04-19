@@ -141,3 +141,13 @@ export async function clipboardCopy(text: string, sensitive: boolean, clearSecon
 export async function clipboardClear(): Promise<void> {
   return invoke('clipboard_clear');
 }
+
+// --- Settings operations ---
+
+export async function settingsGet(): Promise<string> {
+  return invoke('settings_get');
+}
+
+export async function settingsSet(settings: string): Promise<void> {
+  return invoke('settings_set', { settings });
+}

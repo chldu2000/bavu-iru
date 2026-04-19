@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { listen } from '@tauri-apps/api/event';
 	import { vault } from '$lib/stores/vault';
+	import { loadSettings } from '$lib/stores/settings';
 	import { entries } from '$lib/stores/entries';
 	import { folders } from '$lib/stores/folders';
 	import { tags } from '$lib/stores/tags';
@@ -36,6 +37,7 @@
 	onMount(async () => {
 		try {
 			await vault.checkStatus();
+			await loadSettings();
 		} catch {
 			// Tauri not available (dev in browser)
 		}
