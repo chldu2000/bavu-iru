@@ -7,7 +7,8 @@ mod security;
 use commands::clipboard::ClipboardState;
 use crypto::keyring::Keyring;
 use db::repository::Database;
-use tauri::Manager;
+use security::autolock::create_lock_screen_listener;
+use tauri::{Emitter, Manager};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -28,6 +29,18 @@ pub fn run() {
 			app.manage(database);
 			app.manage(keyring);
 			app.manage(ClipboardState::new());
+
+			// Start system lock screen listener
+			let lock_listener = create_lock_screen_listener();
+			let app_handle = app.handle().clone();
+			lock_listener.start_listening(Box::new(move || {
+				let keyring = app_handle.state::<Keyring>();
+				if keyring.is_unlocked() {
+					keyring.lock();
+					let _ = app_handle.emit("vault-locked", ());
+				}
+			}));
+
 			Ok(())
 		})
 		.invoke_handler(tauri::generate_handler![
