@@ -57,7 +57,7 @@
 </script>
 
 {#if filtered.length === 0}
-	<div class="flex flex-col items-center justify-center py-12 text-dark-muted">
+	<div class="flex flex-col items-center justify-center py-12 text-hint">
 		<div class="mb-2 text-2xl">🔒</div>
 		<p class="text-xs">{allEntries.length === 0 ? '还没有条目' : '没有匹配结果'}</p>
 	</div>
@@ -65,8 +65,8 @@
 	{#each filtered as entry (entry.id)}
 		<button
 			class="group w-full cursor-pointer border-l-3 px-3 py-2 text-left transition-colors {selectedId === entry.id
-				? 'border-l-accent bg-dark-card'
-				: 'border-l-transparent hover:bg-dark-card/50'}"
+				? 'border-l-accent bg-card'
+				: 'border-l-transparent hover:bg-card-subtle'}"
 			onclick={() => onselect(entry.id)}
 		>
 			<div class="flex items-center gap-1">
@@ -84,13 +84,13 @@
 				</span>
 				<span
 					class="truncate text-sm font-medium {selectedId === entry.id
-						? 'text-dark-text'
-						: 'text-dark-secondary'}"
+						? 'text-heading'
+						: 'text-body'}"
 				>
 					{entry.title || '无标题'}
 				</span>
 			</div>
-			<div class="truncate pl-4 text-xs text-dark-muted">
+			<div class="truncate pl-4 text-xs text-hint">
 				{entry.username ?? ''}
 			</div>
 		</button>

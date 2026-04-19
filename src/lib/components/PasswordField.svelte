@@ -34,33 +34,33 @@
     {#if editable}
       <input
         type={visible ? 'text' : 'password'}
-        class="flex-1 rounded-md border border-dark-border bg-dark-card px-3 py-2 text-sm text-dark-text outline-none focus:border-accent"
+        class="flex-1 rounded-md border border-line bg-card px-3 py-2 text-sm text-heading outline-none focus:border-accent"
         {value}
         oninput={(e) => onchange?.((e.target as HTMLInputElement).value)}
         placeholder="输入密码"
         autocomplete="off"
       />
       <button
-        class="cursor-pointer rounded-md border border-dark-border bg-dark-card px-3 py-2 text-xs text-accent hover:bg-dark-border"
+        class="cursor-pointer rounded-md border border-line bg-card px-3 py-2 text-xs text-accent hover:bg-line"
         onclick={() => (visible = !visible)}
       >
         {visible ? '隐藏' : '显示'}
       </button>
       <button
-        class="cursor-pointer rounded-md border border-dark-border bg-dark-card px-3 py-2 text-xs text-accent hover:bg-dark-border"
+        class="cursor-pointer rounded-md border border-line bg-card px-3 py-2 text-xs text-accent hover:bg-line"
         onclick={() => (showGenerator = !showGenerator)}
       >
         生成
       </button>
     {:else}
       <div
-        class="flex flex-1 items-center justify-between rounded-md border border-dark-border bg-dark-card px-3 py-2 text-sm"
+        class="flex flex-1 items-center justify-between rounded-md border border-line bg-card px-3 py-2 text-sm"
       >
-        <span class="text-dark-text">
+        <span class="text-heading">
           {visible ? value : '••••••••••'}
         </span>
         <button
-          class="ml-2 cursor-pointer text-dark-muted hover:text-dark-secondary"
+          class="ml-2 cursor-pointer text-hint hover:text-body"
           onclick={() => (visible = !visible)}
           aria-label={visible ? '隐藏密码' : '显示密码'}
         >
@@ -71,7 +71,7 @@
 
     {#if !editable && value}
       <button
-        class="cursor-pointer rounded-md px-3 py-2 text-xs text-accent hover:bg-dark-card"
+        class="cursor-pointer rounded-md px-3 py-2 text-xs text-accent hover:bg-card"
         onclick={handleCopy}
       >
         {copied ? '已复制' : '复制'}

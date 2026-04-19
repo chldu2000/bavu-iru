@@ -53,10 +53,10 @@
 	}
 </script>
 
-<div class="flex h-screen items-center justify-center bg-dark-bg">
+<div class="flex h-screen items-center justify-center bg-page">
 	<div class="w-80 text-center">
-		<h1 class="mb-1 text-3xl font-bold text-dark-text">Bavu-Iru</h1>
-		<p class="mb-8 text-sm text-dark-muted">密码管理器</p>
+		<h1 class="mb-1 text-3xl font-bold text-heading">Bavu-Iru</h1>
+		<p class="mb-8 text-sm text-hint">密码管理器</p>
 
 		<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="flex flex-col gap-3">
 			{#if error}
@@ -67,7 +67,7 @@
 				type="password"
 				bind:value={password}
 				placeholder="输入主密码"
-				class="w-full rounded-md border border-dark-border bg-dark-card px-4 py-3 text-sm text-dark-text outline-none placeholder:text-dark-muted focus:border-accent"
+				class="w-full rounded-md border border-line bg-card px-4 py-3 text-sm text-heading outline-none placeholder:text-hint focus:border-accent"
 				autocomplete="off"
 				autofocus
 			/>
@@ -77,7 +77,7 @@
 					type="password"
 					bind:value={confirmPassword}
 					placeholder="确认主密码"
-					class="w-full rounded-md border border-dark-border bg-dark-card px-4 py-3 text-sm text-dark-text outline-none placeholder:text-dark-muted focus:border-accent"
+					class="w-full rounded-md border border-line bg-card px-4 py-3 text-sm text-heading outline-none placeholder:text-hint focus:border-accent"
 					autocomplete="off"
 				/>
 			{/if}
@@ -93,7 +93,7 @@
 
 		<button
 			onclick={toggleMode}
-			class="mt-4 cursor-pointer text-sm text-dark-muted hover:text-accent"
+			class="mt-4 cursor-pointer text-sm text-hint hover:text-accent"
 		>
 			{isSetup ? '已有保险库？点击解锁' : '没有保险库？点击创建'}
 		</button>

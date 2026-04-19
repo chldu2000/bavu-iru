@@ -1,31 +1,59 @@
 @import 'tailwindcss';
 
+/* ── Light theme (Claude / Anthropic inspired) ── */
+:root {
+  --c-bg: #f5f4ed;
+  --c-sidebar: #faf9f5;
+  --c-card: #ffffff;
+  --c-card-subtle: rgba(0, 0, 0, 0.04);
+  --c-line: #f0eee6;
+  --c-heading: #141413;
+  --c-body: #5e5d59;
+  --c-hint: #87867f;
+  --c-accent: #c96442;
+  --c-accent-hover: #b5533a;
+  --c-danger: #b53333;
+  --c-selection-bg: #c96442;
+  --c-selection-text: #ffffff;
+}
+
+/* ── Dark theme ── */
+[data-theme="dark"] {
+  --c-bg: #141413;
+  --c-sidebar: #0e0e0d;
+  --c-card: #30302e;
+  --c-card-subtle: rgba(255, 255, 255, 0.06);
+  --c-line: #3a3a37;
+  --c-heading: #faf9f5;
+  --c-body: #b0aea5;
+  --c-hint: #7a7568;
+  --c-accent: #d97757;
+  --c-accent-hover: #c96442;
+  --c-danger: #e05555;
+  --c-selection-bg: #d97757;
+  --c-selection-text: #ffffff;
+}
+
 @theme {
-  --color-ivory: #faf9f5;
-  --color-ivory-sidebar: #f2f0ea;
-  --color-warm-border: #e0ddd4;
-  --color-warm-text: #2a2520;
-  --color-warm-secondary: #4a4540;
-  --color-warm-muted: #8a8078;
-
-  --color-dark-bg: #1a1916;
-  --color-dark-sidebar: #141310;
-  --color-dark-card: #201f1a;
-  --color-dark-border: #2a2822;
-  --color-dark-text: #e8e4da;
-  --color-dark-secondary: #c8c4ba;
-  --color-dark-muted: #7a7568;
-
-  --color-accent: #e87a2e;
-  --color-accent-hover: #d46a1f;
-  --color-danger: #cc4444;
+  --color-page: var(--c-bg);
+  --color-sidebar: var(--c-sidebar);
+  --color-card: var(--c-card);
+  --color-card-subtle: var(--c-card-subtle);
+  --color-line: var(--c-line);
+  --color-heading: var(--c-heading);
+  --color-body: var(--c-body);
+  --color-hint: var(--c-hint);
+  --color-accent: var(--c-accent);
+  --color-accent-hover: var(--c-accent-hover);
+  --color-danger: var(--c-danger);
 }
 
 body {
   margin: 0;
-  background-color: var(--color-dark-bg);
-  color: var(--color-dark-text);
+  background-color: var(--c-bg);
+  color: var(--c-heading);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
 }
 
 input, textarea {
@@ -33,6 +61,6 @@ input, textarea {
 }
 
 ::selection {
-  background-color: var(--color-accent);
-  color: white;
+  background-color: var(--c-selection-bg);
+  color: var(--c-selection-text);
 }

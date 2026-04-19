@@ -18,11 +18,11 @@
 	}
 </script>
 
-<div class="border-b border-dark-border py-2">
+<div class="border-b border-line py-2">
 	<div class="flex items-center justify-between px-3 pb-1">
-		<span class="text-xs font-medium uppercase tracking-wide text-dark-muted">文件夹</span>
+		<span class="text-xs font-medium uppercase tracking-wide text-hint">文件夹</span>
 		<button
-			class="cursor-pointer text-xs text-dark-muted hover:text-accent"
+			class="cursor-pointer text-xs text-hint hover:text-accent"
 			onclick={() => (showNewFolder = !showNewFolder)}
 		>
 			+ 新建
@@ -36,7 +36,7 @@
 					type="text"
 					bind:value={newFolderName}
 					placeholder="文件夹名称"
-					class="flex-1 rounded border border-dark-border bg-dark-card px-2 py-1 text-xs text-dark-text outline-none placeholder:text-dark-muted focus:border-accent"
+					class="flex-1 rounded border border-line bg-card px-2 py-1 text-xs text-heading outline-none placeholder:text-hint focus:border-accent"
 					onkeydown={(e) => e.key === 'Enter' && handleCreate()}
 				/>
 				<button
@@ -52,8 +52,8 @@
 	<div class="flex flex-col">
 		<button
 			class="w-full cursor-pointer px-3 py-1 text-left text-xs transition-colors {selectedFolderId === null
-				? 'bg-dark-card text-dark-text'
-				: 'text-dark-secondary hover:bg-dark-card/50'}"
+				? 'bg-card text-heading'
+				: 'text-body hover:bg-card-subtle'}"
 			onclick={() => onselect(null)}
 		>
 			所有条目
@@ -62,8 +62,8 @@
 		{#each $folders as folder (folder.id)}
 			<button
 				class="w-full cursor-pointer px-3 py-1 text-left text-xs transition-colors {selectedFolderId === folder.id
-					? 'bg-dark-card text-dark-text'
-					: 'text-dark-secondary hover:bg-dark-card/50'}"
+					? 'bg-card text-heading'
+					: 'text-body hover:bg-card-subtle'}"
 				onclick={() => onselect(folder.id)}
 			>
 				{folder.name}

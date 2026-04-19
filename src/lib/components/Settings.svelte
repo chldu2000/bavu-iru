@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { settings, saveSettings } from '$lib/stores/settings';
+	import { applyTheme } from '$lib/lib/theme';
 
 	interface Props {
 		onclose: () => void;
@@ -10,6 +11,10 @@
 	let localSettings = $state({ ...$settings });
 	let saved = $state(false);
 
+	function handleThemeChange() {
+		applyTheme(localSettings.theme);
+	}
+
 	async function save() {
 		await saveSettings({ ...localSettings });
 		saved = true;
@@ -17,12 +22,12 @@
 	}
 </script>
 
-<div class="flex h-full flex-col bg-dark-bg">
+<div class="flex h-full flex-col bg-page">
 	<!-- Header -->
-	<div class="flex items-center justify-between border-b border-dark-border px-5 py-3">
-		<h2 class="text-lg font-bold text-dark-text">设置</h2>
+	<div class="flex items-center justify-between border-b border-line px-5 py-3">
+		<h2 class="text-lg font-bold text-heading">设置</h2>
 		<button
-			class="cursor-pointer text-dark-muted hover:text-dark-text"
+			class="cursor-pointer text-hint hover:text-heading"
 			onclick={onclose}
 		>
 			✕
@@ -34,23 +39,23 @@
 		<div class="flex flex-col gap-6">
 			<!-- Auto-lock -->
 			<section>
-				<h3 class="mb-3 text-sm font-medium text-dark-text">自动锁定</h3>
+				<h3 class="mb-3 text-sm font-medium text-heading">自动锁定</h3>
 				<div class="flex flex-col gap-3">
 					<label class="flex items-center justify-between">
-						<span class="text-sm text-dark-secondary">空闲自动锁定（分钟，0 = 关闭）</span>
+						<span class="text-sm text-body">空闲自动锁定（分钟，0 = 关闭）</span>
 						<input
 							type="number"
-							class="w-20 rounded-md border border-dark-border bg-dark-card px-3 py-1.5 text-sm text-dark-text outline-none focus:border-accent"
+							class="w-20 rounded-md border border-line bg-card px-3 py-1.5 text-sm text-heading outline-none focus:border-accent"
 							bind:value={localSettings.autoLockMinutes}
 							min="0"
 							max="30"
 						/>
 					</label>
 					<label class="flex items-center justify-between">
-						<span class="text-sm text-dark-secondary">窗口失焦锁定（分钟，0 = 关闭）</span>
+						<span class="text-sm text-body">窗口失焦锁定（分钟，0 = 关闭）</span>
 						<input
 							type="number"
-							class="w-20 rounded-md border border-dark-border bg-dark-card px-3 py-1.5 text-sm text-dark-text outline-none focus:border-accent"
+							class="w-20 rounded-md border border-line bg-card px-3 py-1.5 text-sm text-heading outline-none focus:border-accent"
 							bind:value={localSettings.focusLockMinutes}
 							min="0"
 							max="10"
@@ -61,12 +66,12 @@
 
 			<!-- Clipboard -->
 			<section>
-				<h3 class="mb-3 text-sm font-medium text-dark-text">剪贴板</h3>
+				<h3 class="mb-3 text-sm font-medium text-heading">剪贴板</h3>
 				<label class="flex items-center justify-between">
-					<span class="text-sm text-dark-secondary">自动清除时间（秒）</span>
+					<span class="text-sm text-body">自动清除时间（秒）</span>
 					<input
 						type="number"
-						class="w-20 rounded-md border border-dark-border bg-dark-card px-3 py-1.5 text-sm text-dark-text outline-none focus:border-accent"
+						class="w-20 rounded-md border border-line bg-card px-3 py-1.5 text-sm text-heading outline-none focus:border-accent"
 						bind:value={localSettings.clipboardClearSeconds}
 						min="10"
 						max="120"
@@ -76,12 +81,13 @@
 
 			<!-- Theme -->
 			<section>
-				<h3 class="mb-3 text-sm font-medium text-dark-text">外观</h3>
+				<h3 class="mb-3 text-sm font-medium text-heading">外观</h3>
 				<label class="flex items-center justify-between">
-					<span class="text-sm text-dark-secondary">主题</span>
+					<span class="text-sm text-body">主题</span>
 					<select
-						class="rounded-md border border-dark-border bg-dark-card px-3 py-1.5 text-sm text-dark-text outline-none focus:border-accent"
+						class="rounded-md border border-line bg-card px-3 py-1.5 text-sm text-heading outline-none focus:border-accent"
 						bind:value={localSettings.theme}
+						onchange={handleThemeChange}
 					>
 						<option value="dark">暗色</option>
 						<option value="light">亮色</option>
@@ -93,7 +99,7 @@
 	</div>
 
 	<!-- Footer -->
-	<div class="flex items-center justify-end border-t border-dark-border px-5 py-3">
+	<div class="flex items-center justify-end border-t border-line px-5 py-3">
 		<button
 			class="cursor-pointer rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover"
 			onclick={save}

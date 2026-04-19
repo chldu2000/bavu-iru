@@ -3,6 +3,7 @@
 	import { listen } from '@tauri-apps/api/event';
 	import { vault } from '$lib/stores/vault';
 	import { loadSettings } from '$lib/stores/settings';
+	import { settings } from '$lib/stores/settings';
 	import { entries } from '$lib/stores/entries';
 	import { folders } from '$lib/stores/folders';
 	import { tags } from '$lib/stores/tags';
@@ -15,6 +16,7 @@
 	import Toast from '$lib/components/Toast.svelte';
 	import Settings from '$lib/components/Settings.svelte';
 	import { startIdleTimer, startFocusLossTimer } from '$lib/lib/idleTimer';
+	import { applyTheme } from '$lib/lib/theme';
 	import type { TimerHandle } from '$lib/lib/idleTimer';
 
 	import type { Entry } from '$lib/stores/entries';
@@ -41,10 +43,15 @@
 		} catch {
 			// Tauri not available (dev in browser)
 		}
+		applyTheme($settings.theme);
 		listen('clipboard-cleared', () => {
 			clipboardClearedToast = true;
 			setTimeout(() => (clipboardClearedToast = false), 2000);
 		}).catch(() => {});
+	});
+
+	$effect(() => {
+		applyTheme($settings.theme);
 	});
 
 	$effect(() => {
@@ -134,14 +141,14 @@
 {:else}
 	<div class="flex h-screen">
 		<!-- Left sidebar -->
-		<div class="flex w-[35%] min-w-0 flex-col bg-dark-sidebar">
+		<div class="flex w-[35%] min-w-0 flex-col bg-sidebar">
 			<!-- Search bar (fixed at top) -->
-			<div class="border-b border-dark-border p-3">
+			<div class="border-b border-line p-3">
 				<input
 					type="text"
 					bind:value={searchQuery}
 					placeholder="搜索条目..."
-					class="w-full rounded-md border border-dark-border bg-dark-card px-3 py-2 text-sm text-dark-text outline-none placeholder:text-dark-muted focus:border-accent"
+					class="w-full rounded-md border border-line bg-card px-3 py-2 text-sm text-heading outline-none placeholder:text-hint focus:border-accent"
 				/>
 			</div>
 
@@ -176,17 +183,17 @@
 			</div>
 
 			<!-- Bottom bar (fixed at bottom) -->
-			<div class="flex items-center justify-between border-t border-dark-border p-2">
+			<div class="flex items-center justify-between border-t border-line p-2">
 				<div class="flex items-center gap-1">
 					<button
-						class="cursor-pointer rounded-md px-2 py-1.5 text-xs text-dark-muted hover:text-accent"
+						class="cursor-pointer rounded-md px-2 py-1.5 text-xs text-hint hover:text-accent"
 						onclick={handleLock}
 						title="锁定保险库"
 					>
 						🔒 锁定
 					</button>
 					<button
-						class="cursor-pointer rounded-md px-2 py-1.5 text-xs text-dark-muted hover:text-accent"
+						class="cursor-pointer rounded-md px-2 py-1.5 text-xs text-hint hover:text-accent"
 						onclick={() => (viewMode = 'settings')}
 						title="设置"
 					>
@@ -203,7 +210,7 @@
 		</div>
 
 		<!-- Right panel -->
-		<div class="flex-1 bg-dark-bg">
+		<div class="flex-1 bg-page">
 			{#if viewMode === 'settings'}
 				<Settings onclose={() => (viewMode = 'empty')} />
 			{:else if viewMode === 'detail' && selectedEntry}
@@ -224,7 +231,7 @@
 					oncancel={cancelEdit}
 				/>
 			{:else}
-				<div class="flex h-full items-center justify-center text-dark-muted">
+				<div class="flex h-full items-center justify-center text-hint">
 					<div class="text-center">
 						<div class="mb-2 text-3xl">📋</div>
 						<p class="text-sm">选择一个条目查看详情</p>

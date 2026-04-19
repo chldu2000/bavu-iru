@@ -58,13 +58,13 @@
 			<button
 				class="cursor-pointer text-lg {entry.is_favorite
 					? 'text-accent'
-					: 'text-dark-muted hover:text-accent'}"
+					: 'text-hint hover:text-accent'}"
 				onclick={handleToggleFavorite}
 				title={entry.is_favorite ? '取消收藏' : '收藏'}
 			>
 				{entry.is_favorite ? '★' : '☆'}
 			</button>
-			<h2 class="text-lg font-bold text-dark-text">{entry.title || '无标题'}</h2>
+			<h2 class="text-lg font-bold text-heading">{entry.title || '无标题'}</h2>
 		</div>
 		<div class="flex gap-3">
 			<button
@@ -86,9 +86,9 @@
 	<div class="flex flex-col gap-4">
 		{#if folderName}
 			<div>
-				<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">文件夹</span>
+				<span class="mb-1 block text-xs uppercase tracking-wide text-hint">文件夹</span>
 				<div
-					class="rounded-md border border-dark-border bg-dark-card px-3 py-2 text-sm text-dark-text"
+					class="rounded-md border border-line bg-card px-3 py-2 text-sm text-heading"
 				>
 					{folderName}
 				</div>
@@ -97,7 +97,7 @@
 
 		{#if entryTags.length > 0}
 			<div>
-				<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">标签</span>
+				<span class="mb-1 block text-xs uppercase tracking-wide text-hint">标签</span>
 				<div class="flex flex-wrap gap-1">
 					{#each entryTags as tag (tag.id)}
 						<span
@@ -113,9 +113,9 @@
 
 		{#if entry.username}
 			<div>
-				<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">用户名</span>
+				<span class="mb-1 block text-xs uppercase tracking-wide text-hint">用户名</span>
 				<div
-					class="flex items-center justify-between rounded-md border border-dark-border bg-dark-card px-3 py-2 text-sm text-dark-text"
+					class="flex items-center justify-between rounded-md border border-line bg-card px-3 py-2 text-sm text-heading"
 				>
 					<span>{entry.username}</span>
 					<button
@@ -130,7 +130,7 @@
 
 		{#if entry.password !== null}
 			<div>
-				<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">密码</span>
+				<span class="mb-1 block text-xs uppercase tracking-wide text-hint">密码</span>
 				<PasswordField value={entry.password ?? ''} sensitive={true} oncopy={() => {
 					copiedField = 'password';
 					showCopiedToast = true;
@@ -141,9 +141,9 @@
 
 		{#if entry.url}
 			<div>
-				<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">网址</span>
+				<span class="mb-1 block text-xs uppercase tracking-wide text-hint">网址</span>
 				<div
-					class="rounded-md border border-dark-border bg-dark-card px-3 py-2 text-sm text-accent"
+					class="rounded-md border border-line bg-card px-3 py-2 text-sm text-accent"
 				>
 					{entry.url}
 				</div>
@@ -152,9 +152,9 @@
 
 		{#if entry.notes}
 			<div>
-				<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">备注</span>
+				<span class="mb-1 block text-xs uppercase tracking-wide text-hint">备注</span>
 				<div
-					class="whitespace-pre-wrap rounded-md border border-dark-border bg-dark-card px-3 py-2 text-sm text-dark-secondary"
+					class="whitespace-pre-wrap rounded-md border border-line bg-card px-3 py-2 text-sm text-body"
 				>
 					{entry.notes}
 				</div>

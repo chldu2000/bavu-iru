@@ -64,26 +64,26 @@
 </script>
 
 <div class="flex h-full flex-col p-5">
-	<h2 class="mb-5 text-lg font-bold text-dark-text">
+	<h2 class="mb-5 text-lg font-bold text-heading">
 		{entry ? '编辑条目' : '新建条目'}
 	</h2>
 
 	<div class="flex flex-1 flex-col gap-3 overflow-y-auto">
 		<div>
-			<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">标题 *</span>
+			<span class="mb-1 block text-xs uppercase tracking-wide text-hint">标题 *</span>
 			<input
 				type="text"
 				bind:value={title}
 				placeholder="例如：GitHub"
-				class="w-full rounded-md border border-dark-border bg-dark-card px-3 py-2 text-sm text-dark-text outline-none placeholder:text-dark-muted focus:border-accent"
+				class="w-full rounded-md border border-line bg-card px-3 py-2 text-sm text-heading outline-none placeholder:text-hint focus:border-accent"
 			/>
 		</div>
 
 		<div>
-			<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">文件夹</span>
+			<span class="mb-1 block text-xs uppercase tracking-wide text-hint">文件夹</span>
 			<select
 				bind:value={folderId}
-				class="w-full rounded-md border border-dark-border bg-dark-card px-3 py-2 text-sm text-dark-text outline-none focus:border-accent"
+				class="w-full rounded-md border border-line bg-card px-3 py-2 text-sm text-heading outline-none focus:border-accent"
 			>
 				<option value="">无文件夹</option>
 				{#each $folders as folder (folder.id)}
@@ -93,8 +93,8 @@
 		</div>
 
 		<div>
-			<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">标签</span>
-			<div class="flex flex-wrap gap-1 rounded-md border border-dark-border bg-dark-card p-2">
+			<span class="mb-1 block text-xs uppercase tracking-wide text-hint">标签</span>
+			<div class="flex flex-wrap gap-1 rounded-md border border-line bg-card p-2">
 				{#each $tags as tag (tag.id)}
 					<button
 						type="button"
@@ -102,7 +102,7 @@
 							tag.id
 						)
 							? 'text-white ring-1 ring-white/20'
-							: 'text-dark-secondary hover:text-dark-text'}"
+							: 'text-body hover:text-heading'}"
 						style:background-color={selectedTagIds.includes(tag.id) ? tag.color : 'transparent'}
 						style:border="1px solid {tag.color}"
 						onclick={() => toggleTag(tag.id)}
@@ -111,23 +111,23 @@
 					</button>
 				{/each}
 				{#if $tags.length === 0}
-					<span class="text-xs text-dark-muted">暂无标签</span>
+					<span class="text-xs text-hint">暂无标签</span>
 				{/if}
 			</div>
 		</div>
 
 		<div>
-			<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">用户名</span>
+			<span class="mb-1 block text-xs uppercase tracking-wide text-hint">用户名</span>
 			<input
 				type="text"
 				bind:value={username}
 				placeholder="user@example.com"
-				class="w-full rounded-md border border-dark-border bg-dark-card px-3 py-2 text-sm text-dark-text outline-none placeholder:text-dark-muted focus:border-accent"
+				class="w-full rounded-md border border-line bg-card px-3 py-2 text-sm text-heading outline-none placeholder:text-hint focus:border-accent"
 			/>
 		</div>
 
 		<div>
-			<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">密码</span>
+			<span class="mb-1 block text-xs uppercase tracking-wide text-hint">密码</span>
 			<PasswordField
 				value={password}
 				editable={true}
@@ -136,22 +136,22 @@
 		</div>
 
 		<div>
-			<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">网址</span>
+			<span class="mb-1 block text-xs uppercase tracking-wide text-hint">网址</span>
 			<input
 				type="text"
 				bind:value={url}
 				placeholder="https://"
-				class="w-full rounded-md border border-dark-border bg-dark-card px-3 py-2 text-sm text-dark-text outline-none placeholder:text-dark-muted focus:border-accent"
+				class="w-full rounded-md border border-line bg-card px-3 py-2 text-sm text-heading outline-none placeholder:text-hint focus:border-accent"
 			/>
 		</div>
 
 		<div>
-			<span class="mb-1 block text-xs uppercase tracking-wide text-dark-muted">备注</span>
+			<span class="mb-1 block text-xs uppercase tracking-wide text-hint">备注</span>
 			<textarea
 				bind:value={notes}
 				placeholder="可选备注..."
 				rows="3"
-				class="w-full resize-y rounded-md border border-dark-border bg-dark-card px-3 py-2 text-sm text-dark-text outline-none placeholder:text-dark-muted focus:border-accent"
+				class="w-full resize-y rounded-md border border-line bg-card px-3 py-2 text-sm text-heading outline-none placeholder:text-hint focus:border-accent"
 			></textarea>
 		</div>
 	</div>
@@ -159,7 +159,7 @@
 	<!-- 操作按钮 -->
 	<div class="flex justify-end gap-2 pt-4">
 		<button
-			class="cursor-pointer rounded-md px-4 py-2 text-sm text-dark-muted hover:text-dark-text"
+			class="cursor-pointer rounded-md px-4 py-2 text-sm text-hint hover:text-heading"
 			onclick={oncancel}
 		>
 			取消
