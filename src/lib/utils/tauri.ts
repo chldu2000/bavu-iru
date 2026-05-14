@@ -151,3 +151,78 @@ export async function settingsGet(): Promise<string> {
 export async function settingsSet(settings: string): Promise<void> {
   return invoke('settings_set', { settings });
 }
+
+// --- Import/Export operations ---
+
+export interface ImportEntry {
+  title: string;
+  username: string | null;
+  password: string | null;
+  url: string | null;
+  notes: string | null;
+  folder: string | null;
+}
+
+export interface DuplicateEntry {
+  existing_id: string;
+  existing_title: string;
+  existing_username: string | null;
+  imported_title: string;
+  imported_username: string | null;
+}
+
+export interface PreviewResult {
+  total: number;
+  entries: ImportEntry[];
+  duplicates: DuplicateEntry[];
+}
+
+export interface ImportResult {
+  imported: number;
+  skipped: number;
+  replaced: number;
+}
+
+export interface ExportData {
+  filename: string;
+  data: string;
+}
+
+export interface IntegrityIssue {
+  severity: string;
+  message: string;
+}
+
+export interface IntegrityResult {
+  status: string;
+  issues: IntegrityIssue[];
+}
+
+export async function exportVault(
+  format: string,
+  masterPassword: string,
+  password?: string
+): Promise<ExportData> {
+  return invoke('export_vault', { format, masterPassword, password });
+}
+
+export async function previewImport(
+  format: string,
+  content: string,
+  password?: string
+): Promise<PreviewResult> {
+  return invoke('preview_import', { format, content, password });
+}
+
+export async function importVault(
+  format: string,
+  content: string,
+  resolutions: Record<string, string>,
+  password?: string
+): Promise<ImportResult> {
+  return invoke('import_vault', { format, content, resolutions, password });
+}
+
+export async function checkIntegrity(): Promise<IntegrityResult> {
+  return invoke('check_integrity');
+}
