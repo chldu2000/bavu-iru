@@ -80,6 +80,10 @@ pub fn run() {
 			commands::strength::evaluate_password_strength,
 			commands::clipboard::clipboard_copy,
 			commands::clipboard::clipboard_clear,
+				commands::import_export::export_vault,
+				commands::import_export::preview_import,
+				commands::import_export::import_vault,
+				commands::import_export::check_integrity,
 		])
 		.on_window_event(|window, event| {
 			if let tauri::WindowEvent::CloseRequested { api, .. } = event {
