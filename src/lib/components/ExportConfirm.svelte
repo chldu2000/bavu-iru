@@ -55,8 +55,9 @@
 		}
 	}
 </script>
-
+<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onclick={onclose}>
+	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 	<div class="w-full max-w-md rounded-xl bg-card p-6 shadow-xl" onclick={(e) => e.stopPropagation()}>
 		<h2 class="mb-4 text-lg font-bold text-heading">导出保险库</h2>
 

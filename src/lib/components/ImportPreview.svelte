@@ -14,9 +14,13 @@
 	let { preview, format, content, password, oncomplete, oncancel }: Props = $props();
 
 	let resolutions = $state<Record<string, string>>({});
-	for (const dup of preview.duplicates) {
-		resolutions[dup.existing_id] = 'keep';
-	}
+	$effect(() => {
+		for (const dup of preview.duplicates) {
+			if (!resolutions[dup.existing_id]) {
+				resolutions[dup.existing_id] = 'keep';
+			}
+		}
+	});
 
 	let loading = $state(false);
 	let error = $state('');
