@@ -32,3 +32,4 @@ base64 = "0.22"
 thiserror = "2"
 tokio-util = { version = "0.7", features = ["rt"] }
 tokio = { version = "1.44", features = ["time", "macros"] }
+csv = "1.3"

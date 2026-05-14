@@ -22,6 +22,10 @@ pub enum AppError {
 	Base64(#[from] base64::DecodeError),
 	#[error("Clipboard error: {0}")]
 	Clipboard(String),
+	#[error("Import error: {0}")]
+	Import(String),
+	#[error("Export error: {0}")]
+	Export(String),
 }
 
 impl From<aes_gcm::Error> for AppError {
@@ -33,6 +37,12 @@ impl From<aes_gcm::Error> for AppError {
 impl From<argon2::Error> for AppError {
 	fn from(e: argon2::Error) -> Self {
 		AppError::Kdf(format!("{:?}", e))
+	}
+}
+
+impl From<csv::Error> for AppError {
+	fn from(e: csv::Error) -> Self {
+		AppError::Import(e.to_string())
 	}
 }
 
