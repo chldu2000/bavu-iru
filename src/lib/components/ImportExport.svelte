@@ -125,7 +125,7 @@
 		{#if tab === 'import'}
 			{#if previewResult}
 				<ImportPreview
-					{previewResult}
+					preview={previewResult}
 					format={importFormat}
 					content={fileContent}
 					password={importFormat === 'encrypted' ? importPassword : undefined}
