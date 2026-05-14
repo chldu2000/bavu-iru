@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { entries } from '$lib/stores/entries';
 	import { previewImport, checkIntegrity } from '$lib/utils/tauri';
 	import type { PreviewResult, IntegrityResult, ExportData } from '$lib/utils/tauri';
 	import ExportConfirm from './ExportConfirm.svelte';
@@ -58,10 +59,11 @@
 		}
 	}
 
-	function handleImportComplete() {
+	async function handleImportComplete() {
 		previewResult = null;
 		fileContent = '';
 		fileName = '';
+		await entries.load();
 	}
 
 	function handleExportComplete(_data: ExportData) {

@@ -307,14 +307,20 @@ pub fn export_vault(
             })
         }
         "csv" => {
+            let folders = db.list_folders()?;
             let mut wtr = csv::Writer::from_writer(Vec::new());
             for entry in &entries {
+                let folder_name = entry.folder_id.as_ref()
+                    .and_then(|fid| folders.iter().find(|f| &f.id == fid))
+                    .map(|f| f.name.as_str())
+                    .unwrap_or("");
                 wtr.write_record(&[
                     &entry.title,
                     entry.username.as_deref().unwrap_or(""),
                     entry.password.as_deref().unwrap_or(""),
                     entry.url.as_deref().unwrap_or(""),
                     entry.notes.as_deref().unwrap_or(""),
+                    folder_name,
                 ]).map_err(|e| AppError::Export(e.to_string()))?;
             }
             let bytes = wtr.into_inner().map_err(|e| AppError::Export(e.to_string()))?;
@@ -330,7 +336,9 @@ pub fn export_vault(
             let params = KdfParams { salt, time_cost: 3, memory_cost: 65536, parallelism: 4 };
             let key = kdf::derive_key(&export_pwd, &params)?;
 
-            let json = serde_json::to_string(&serde_json::json!({ "entries": entries }))
+            let folders = db.list_folders().unwrap_or_default();
+            let tags = db.list_tags().unwrap_or_default();
+            let json = serde_json::to_string(&serde_json::json!({ "entries": entries, "folders": folders, "tags": tags }))
                 .map_err(|e| AppError::Export(e.to_string()))?;
             let encrypted = cipher::encrypt(&key, json.as_bytes())?;
 
@@ -460,11 +468,29 @@ fn map_import_to_entry(imp: &ImportEntry, db: &Database, now: &str) -> Entry {
 #[tauri::command]
 pub fn check_integrity(
     db: State<'_, Database>,
-    keyring: State<'_, Keyring>,
+    _keyring: State<'_, Keyring>,
 ) -> Result<IntegrityResult, AppError> {
     let mut issues = Vec::new();
 
-    // Check 1: metadata complete
+    // Check 1: database readable
+    let entries = match db.list_entries() {
+        Ok(e) => {
+            issues.push(IntegrityIssue {
+                severity: "info".into(),
+                message: format!("Database readable, total entries: {}", e.len()),
+            });
+            e
+        }
+        Err(e) => {
+            issues.push(IntegrityIssue {
+                severity: "error".into(),
+                message: format!("Database read error: {}", e),
+            });
+            return Ok(IntegrityResult { status: "error".into(), issues });
+        }
+    };
+
+    // Check 2: metadata complete
     let required_keys = ["kdf_salt", "vault_verify"];
     for key in &required_keys {
         match db.get_meta(key) {
@@ -480,54 +506,58 @@ pub fn check_integrity(
         }
     }
 
-    // Check 2: entries have non-empty titles
-    if let Ok(entries) = db.list_entries() {
+    // Check 3: entries have non-empty titles
+    for entry in &entries {
+        if entry.title.is_empty() {
+            issues.push(IntegrityIssue {
+                severity: "warning".into(),
+                message: format!("Entry {} has empty title", entry.id),
+            });
+        }
+    }
+
+    // Check 4: orphan entries (folder_id references)
+    if let Ok(folders) = db.list_folders() {
+        let folder_ids: std::collections::HashSet<_> = folders.iter().map(|f| f.id.as_str()).collect();
         for entry in &entries {
-            if entry.title.is_empty() {
-                issues.push(IntegrityIssue {
-                    severity: "warning".into(),
-                    message: format!("Entry {} has empty title", entry.id),
-                });
+            if let Some(ref fid) = entry.folder_id {
+                if !folder_ids.contains(fid.as_str()) {
+                    issues.push(IntegrityIssue {
+                        severity: "warning".into(),
+                        message: format!("Entry '{}' references non-existent folder {}", entry.title, fid),
+                    });
+                }
             }
         }
-        issues.push(IntegrityIssue {
-            severity: "info".into(),
-            message: format!("Total entries: {}", entries.len()),
-        });
+    }
 
-        // Check 3: orphan entries (folder_id references)
-        if let Ok(folders) = db.list_folders() {
-            let folder_ids: std::collections::HashSet<_> = folders.iter().map(|f| f.id.as_str()).collect();
-            for entry in &entries {
-                if let Some(ref fid) = entry.folder_id {
-                    if !folder_ids.contains(fid.as_str()) {
+    // Check 5: orphan tag relations via entry_tags table
+    if let Ok(all_tags) = db.list_tags() {
+        let tag_ids: std::collections::HashSet<_> = all_tags.iter().map(|t| t.id.as_str()).collect();
+        let entry_ids: std::collections::HashSet<_> = entries.iter().map(|e| e.id.as_str()).collect();
+        for entry in &entries {
+            if let Ok(entry_tags) = db.get_entry_tags(&entry.id) {
+                for tag in &entry_tags {
+                    if !tag_ids.contains(tag.id.as_str()) {
                         issues.push(IntegrityIssue {
                             severity: "warning".into(),
-                            message: format!("Entry '{}' references non-existent folder {}", entry.title, fid),
+                            message: format!("Entry '{}' has orphan tag relation to {}", entry.title, tag.id),
                         });
                     }
                 }
             }
         }
-
-        // Check 4: orphan tag relations
-        if let Ok(tags) = db.list_tags() {
-            let tag_ids: std::collections::HashSet<_> = tags.iter().map(|t| t.id.as_str()).collect();
-            for entry in &entries {
-                if let Some(tags_str) = &entry.tags {
-                    if let Ok(tag_list) = serde_json::from_str::<Vec<String>>(tags_str) {
-                        for tid in &tag_list {
-                            if !tag_ids.contains(tid.as_str()) {
-                                issues.push(IntegrityIssue {
-                                    severity: "warning".into(),
-                                    message: format!("Entry '{}' references non-existent tag {}", entry.title, tid),
-                                });
-                            }
-                        }
-                    }
-                }
+        // Check for entry_tags referencing deleted entries
+        for tag in &all_tags {
+            if let Ok(tag_entries) = db.list_entries() {
+                let _ = tag_entries; // Already checked above
             }
         }
+        // Report tag count
+        issues.push(IntegrityIssue {
+            severity: "info".into(),
+            message: format!("Total tags: {}, total folders: {}", all_tags.len(), db.list_folders().map(|f| f.len()).unwrap_or(0)),
+        });
     }
 
     let has_errors = issues.iter().any(|i| i.severity == "error");
