@@ -15,13 +15,14 @@
 	import TagCloud from '$lib/components/TagCloud.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 	import Settings from '$lib/components/Settings.svelte';
+	import ImportExport from '$lib/components/ImportExport.svelte';
 	import { startIdleTimer, startFocusLossTimer } from '$lib/lib/idleTimer';
 	import { applyTheme } from '$lib/lib/theme';
 	import type { TimerHandle } from '$lib/lib/idleTimer';
 
 	import type { Entry } from '$lib/stores/entries';
 
-	type ViewMode = 'empty' | 'detail' | 'edit' | 'create' | 'settings';
+	type ViewMode = 'empty' | 'detail' | 'edit' | 'create' | 'settings' | 'import-export';
 
 	let selectedId: string | null = $state(null);
 	let viewMode: ViewMode = $state('empty');
@@ -199,6 +200,13 @@
 					>
 						⚙ 设置
 					</button>
+					<button
+						class="cursor-pointer rounded-md px-2 py-1.5 text-xs text-hint hover:text-accent"
+						onclick={() => (viewMode = 'import-export')}
+						title="导入/导出"
+					>
+						📦 导入/导出
+					</button>
 				</div>
 				<button
 					class="cursor-pointer rounded-md bg-accent px-4 py-1.5 text-xs font-medium text-white hover:bg-accent-hover"
@@ -213,6 +221,8 @@
 		<div class="flex-1 bg-page">
 			{#if viewMode === 'settings'}
 				<Settings onclose={() => (viewMode = 'empty')} />
+			{:else if viewMode === 'import-export'}
+				<ImportExport onclose={() => (viewMode = 'empty')} />
 			{:else if viewMode === 'detail' && selectedEntry}
 				<EntryDetail
 					entry={selectedEntry}
