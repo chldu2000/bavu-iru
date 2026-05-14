@@ -43,3 +43,15 @@ pub struct Meta {
 	pub key: String,
 	pub value: String,
 }
+
+/// Flat entry representation used during import before folder resolution.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ImportEntry {
+	pub title: String,
+	pub username: Option<String>,
+	pub password: Option<String>,
+	pub url: Option<String>,
+	pub notes: Option<String>,
+	pub folder: Option<String>,
+	pub custom_fields: Option<String>,
+}

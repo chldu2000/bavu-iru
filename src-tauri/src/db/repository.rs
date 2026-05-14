@@ -84,7 +84,7 @@ impl Database {
                 FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
             );
             "
-        )?;
+		)?;
 
 		// Migration for existing databases: add is_favorite column if missing
 		let _ = conn.execute_batch(
@@ -355,5 +355,63 @@ impl Database {
 			})
 		})?;
 		tags.collect()
+	}
+
+	// --- Import helper operations ---
+
+	pub fn count_entries(&self) -> SqliteResult<usize> {
+		let conn = self.conn.lock().unwrap();
+		let count: i64 = conn.query_row("SELECT COUNT(*) FROM entries", [], |row| row.get(0))?;
+		Ok(count as usize)
+	}
+
+	pub fn find_entry_by_title_username(&self, title: &str, username: Option<&str>) -> SqliteResult<Option<Entry>> {
+		let conn = self.conn.lock().unwrap();
+		let mut stmt = if username.is_some() {
+			conn.prepare("SELECT id, folder_id, title, username, password, url, notes, custom_fields, tags, strength, expires_at, is_favorite, created_at, updated_at FROM entries WHERE title = ?1 AND username = ?2")?
+		} else {
+			conn.prepare("SELECT id, folder_id, title, username, password, url, notes, custom_fields, tags, strength, expires_at, is_favorite, created_at, updated_at FROM entries WHERE title = ?1 AND username IS NULL")?
+		};
+		let mut rows = if let Some(u) = username {
+			stmt.query(rusqlite::params![title, u])?
+		} else {
+			stmt.query(rusqlite::params![title])?
+		};
+		match rows.next()? {
+			Some(row) => Ok(Some(Entry {
+				id: row.get(0)?,
+				folder_id: row.get(1)?,
+				title: row.get(2)?,
+				username: row.get(3)?,
+				password: row.get(4)?,
+				url: row.get(5)?,
+				notes: row.get(6)?,
+				custom_fields: row.get(7)?,
+				tags: row.get(8)?,
+				strength: row.get(9)?,
+				expires_at: row.get(10)?,
+				is_favorite: row.get::<_, i32>(11)? != 0,
+				created_at: row.get(12)?,
+				updated_at: row.get(13)?,
+			})),
+			None => Ok(None),
+		}
+	}
+
+	pub fn find_folder_by_name(&self, name: &str) -> SqliteResult<Option<Folder>> {
+		let conn = self.conn.lock().unwrap();
+		let mut stmt = conn.prepare("SELECT id, name, parent_id, sort_order, created_at, updated_at FROM folders WHERE name = ?1")?;
+		let mut rows = stmt.query(rusqlite::params![name])?;
+		match rows.next()? {
+			Some(row) => Ok(Some(Folder {
+				id: row.get(0)?,
+				name: row.get(1)?,
+				parent_id: row.get(2)?,
+				sort_order: row.get(3)?,
+				created_at: row.get(4)?,
+				updated_at: row.get(5)?,
+			})),
+			None => Ok(None),
+		}
 	}
 }
